@@ -32,7 +32,8 @@ def find_image_path_with_name(_name):
 def load_train_val_generator():
 	df['labels'] = df.apply(lambda row: merge_types(row), axis=1)
 	df['path'] = df.apply(lambda row: find_image_path_with_name(row['Name']), axis=1)
-	train_df, validation_df = train_test_split(df, test_size=0.2, random_state=42)
+	train_df, temp_df = train_test_split(df, train_size=0.8, random_state=42)
+	validation_df, test_df =  train_test_split(temp_df, test_size=0.5, random_state=42)
 	datagen = ImageDataGenerator(rescale=1./255)
 	train_generator = datagen.flow_from_dataframe(
 	    dataframe=train_df,
@@ -54,4 +55,14 @@ def load_train_val_generator():
 	    class_mode='categorical',
 	    validate_filenames=True
 	)
-	return train_generator, validation_generator
+	test_generator = datagen.flow_from_dataframe(
+	    dataframe=test_df,
+	    directory=IMAGES_FOLDER,
+	    x_col='path',
+	    y_col='labels',
+	    target_size=(IMG_WIDTH, IMG_HEIGHT),
+	    #batch_size=?,
+	    class_mode='categorical',
+	    validate_filenames=True
+	)
+	return train_generator, validation_generator, test_generator
