@@ -15,6 +15,7 @@ CSV_PATH = os.path.join(DATA_PATH, 'pokemon.csv')
 IMG_PATH = os.path.join(DATA_PATH, 'images', 'images')
 IMG_WIDTH, IMG_HEIGHT = 128,128
 df = pd.read_csv(CSV_PATH)
+pokemon_names = df['Name'].tolist()
 
 sys.path.append(ROOT)
 from models.model import load_train_val_generator, merge_types, find_image_path_with_name
@@ -28,12 +29,12 @@ model = load_model(MODEL_PATH)
 
 @app.route('/')
 def index():
-	return ('hello world')
+	return render_template('index.html', pokemon_names=pokemon_names)
+	# return 'hello world'
 
 @app.route('/predict', methods=['POST'])
 def predict():
-	request_data = request.get_json(force=True)
-	pokemon_name = request_data["pokemon_name"]	
+	pokemon_name = request.form['pokemon_name']
 	pokemon_path = os.path.join(IMG_PATH, find_image_path_with_name(pokemon_name))
 
 	if os.path.exists(pokemon_path):
@@ -44,7 +45,13 @@ def predict():
 
 		prediction = model.predict(img_array)
 		predicted_labels = [CLASSES[i] for i, p in enumerate(prediction[0]) if p > 0.3]
-		return predicted_labels
+		actual_labels = df.loc[df['Name']==pokemon_name, 'labels'].values[0]
+
+		return render_template('result.html', 
+                               pokemon_name=pokemon_name,
+                               img_path=os.path.join('images', find_image_path_with_name(pokemon_name)),
+                               predicted_labels=predicted_labels,
+                               actual_labels=actual_labels)
 
 	else:
 		return jsonify({'error': 'Invalid Pokemon name'})

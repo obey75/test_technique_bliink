@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Classifier</title>
+</head>
+<body>
+    <h1>Pokemon Classifier</h1>
+    <form action="/predict" method="post" enctype="multipart/form-data">
+        <label for="pokemon_name">Enter Pokemon Name:</label>
+        <input type="text" name="pokemon_name" id="pokemon_name" list="pokemon_list" required>
+        <datalist id="pokemon_list">
+            {% for name in pokemon_names %}
+                <option value="{{ name }}">
+            {% endfor %}
+        </datalist>
+        <input type="submit" value="Predict">
+        <script>
+            const pokemonList = document.getElementById('pokemon_list');
+            {% for name in pokemon_names %}
+                const option = document.createElement('option');
+                option.value = "{{ name }}";
+                pokemonList.appendChild(option);
+            {% endfor %}
+        </script>
+    </form>
+</body>
+</html>
