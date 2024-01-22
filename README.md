@@ -6,7 +6,7 @@ Given 800 pokemon images with their types, this project aims at developing a web
 
 Open a terminal window at the root of the project and follow one by one these instructions :
 ```
-.venv/bin/activate
+. venv/bin/activate
 pip install -r requirements.txt
 python api/app.py
 ```
