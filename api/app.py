@@ -4,9 +4,15 @@ import numpy as np
 import pandas as pd
 
 from flask import Flask, render_template, request, jsonify
+import requests
+
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
+from keras.applications.mobilenet_v2 import preprocess_input
 
+import base64
+from io import BytesIO
+from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(__file__))
 MODEL_PATH = os.path.join(ROOT, 'models', 'first_model.h5')
@@ -30,7 +36,6 @@ model = load_model(MODEL_PATH)
 @app.route('/')
 def index():
 	return render_template('index.html', pokemon_names=pokemon_names)
-	# return 'hello world'
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -55,6 +60,31 @@ def predict():
 
 	else:
 		return jsonify({'error': 'Invalid Pokemon name'})
+
+@app.route('/predict_url', methods=['POST'])
+def predict_url():
+	pokemon_url = request.form['pokemon_url']
+	response = requests.get(pokemon_url)
+
+	if response.status_code == 200:
+		img = Image.open(BytesIO(response.content))
+		img = img.resize((IMG_WIDTH, IMG_HEIGHT))
+		img_array = image.img_to_array(img)
+		if img_array.shape[-1] == 4:
+			img_array = img_array[:, :, :3]
+		if img_array.shape[-1] == 1:
+			img_array = np.concatenate([img_array] * 3, axis=-1)
+		img_array = preprocess_input(img_array)
+		img_array = np.expand_dims(img_array, axis=0)
+
+		prediction = model.predict(img_array)
+		predicted_labels = [CLASSES[i] for i, p in enumerate(prediction[0]) if p > 0.3]
+
+		return render_template('result_url.html',
+								img_path=pokemon_url,
+								predicted_labels=predicted_labels)
+	else:
+		return "Failed to fetch image from the provided URL."
 
 
 if __name__ == '__main__':
