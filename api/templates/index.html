@@ -3,12 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
     <title>Pokemon Classifier</title>
 </head>
 <body>
     <h1>Pokemon Classifier</h1>
+    <p>Enter a Pokemon Name to perform a prediction on a local DB item.<br><br>Enter Pokemon url to perform a prediction on your image from the web.<p>
+    <br>
     <form action="/predict" method="post" enctype="multipart/form-data">
-        <label for="pokemon_name">Enter Pokemon Name : </label>
+        <label for="pokemon_name">Pokemon Name</label>
         <input type="text" name="pokemon_name" id="pokemon_name" list="pokemon_list" required>
         <datalist id="pokemon_list">
             {% for name in pokemon_names %}
@@ -25,8 +28,9 @@
             {% endfor %}
         </script>
     </form>
+    <br>
     <form action="/predict_url" method="post" enctype="multipart/form-data">
-        <label for="pokemon_url">Or enter Pokemon url : </label>
+        <label for="pokemon_url">Pokemon url</label>
         <input type="text" name="pokemon_url" id="pokemon_url" required>
         <input type="submit" value="Predict">
     </form>

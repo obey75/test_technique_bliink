@@ -3,25 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
     <title>Pokemon Classifier - Result</title>
 </head>
 <body>
     <h1>Pokemon Classifier - Result</h1>
     <h2>{{ pokemon_name }}</h2>
-    <img src="{{ url_for('static', filename=img_path) }}" alt="{{ pokemon_name }} Image">
+    <p><img src="{{ url_for('static', filename=img_path) }}" alt="{{ pokemon_name }} Image"></p>
     
-    <h3>Predicted Types:</h3>
-    <ul>
-        {% for label in predicted_labels %}
-            <li>{{ label }}</li>
-        {% endfor %}
-    </ul>
-    
-    <h3>Actual Types:</h3>
-    <ul>
-        {% for label in actual_labels %}
-            <li>{{ label }}</li>
-        {% endfor %}
-    </ul>
+    <div class="types">
+        <h3>Predicted Types:</h3>
+        <ul>
+            {% for label in predicted_labels %}
+                <li>{{ label }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="types">    
+        <h3>Actual Types:</h3>
+        <ul>
+            {% for label in actual_labels %}
+                <li>{{ label }}</li>
+            {% endfor %}
+        </ul>
+    <div class="types">
 </body>
 </html>
